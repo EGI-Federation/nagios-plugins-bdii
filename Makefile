@@ -1,9 +1,7 @@
-NAME= $(shell grep Name: *.spec | sed 's/^[^:]*:[^a-zA-Z]*//' )
-VERSION= $(shell grep Version: *.spec | sed 's/^[^:]*:[^0-9]*//' )
-RELEASE= $(shell grep Release: *.spec |cut -d"%" -f1 |sed 's/^[^:]*:[^0-9]*//')
-build=$(shell pwd)/build
-DATE=$(shell date "+%a, %d %b %Y %T %z")
-dist=$(shell rpm --eval '%dist' | sed 's/%dist/.el5/')
+name= ${shell grep Name: *.spec | sed 's/^[^:]*: //' }
+version= ${shell grep Version: *.spec | sed 's/^[^:]*: //' }
+release= $(shell grep Release: *.spec |cut -d"%" -f1 |sed 's/^[^:]*:[^0-9]*//')
+build=${shell pwd}/build
 
 SCRATCH=${PWD}/build
 CC  = /usr/bin/gcc
@@ -23,7 +21,7 @@ install:
 sources: dist
 
 dist:
-	tar --gzip --exclude ".svn" --exclude ".svn" -cf ${NAME}-${VERSION}.src.tgz *
+	tar --gzip --exclude ".svn" --exclude ".svn" -cf ${name}-${version}.src.tgz *
 
 prepare: dist
 	@mkdir -p  build/RPMS/noarch
@@ -31,19 +29,19 @@ prepare: dist
 	@mkdir -p  build/SPECS/
 	@mkdir -p  build/SOURCES/
 	@mkdir -p  build/BUILD/
-	cp ${NAME}-${VERSION}.src.tgz build/SOURCES 
+	cp ${name}-${version}.src.tgz build/SOURCES 
 
 srpm: prepare
-	@rpmbuild -bs --define="dist ${dist}" --define='_topdir ${build}' $(NAME).spec
+	@rpmbuild -bs --define='_topdir ${build}' $(name).spec
 
 rpm: srpm
-	@rpmbuild --rebuild  --define='_topdir ${build} ' $(build)/SRPMS/$(NAME)-$(VERSION)-$(RELEASE)${dist}.src.rpm
+	@rpmbuild --rebuild  --define='_topdir ${build} ' $(build)/SRPMS/$(name)-$(version)-$(release).src.rpm
 
 deb: rpm
-	fakeroot alien build/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm
+	fakeroot alien build/RPMS/noarch/${name}-${version}-1.noarch.rpm
 
 clean:
-	@rm -f *~ bin/*~ etc/*~ data/*~ ${NAME}-*.src.tgz
+	@rm -f *~ bin/*~ etc/*~ data/*~ ${name}-*.src.tgz
 	@rm -rf build dist MANIFEST
 
 .PHONY: dist srpm rpm sources clean 
