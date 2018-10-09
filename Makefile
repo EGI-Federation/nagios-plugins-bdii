@@ -43,15 +43,8 @@ srpm: prepare
 rpm: srpm
 	rpmbuild --rebuild  --define='_topdir ${build} ' $(build)/SRPMS/$(NAME)-$(VERSION)-$(RELEASE)${dist}.src.rpm
 
-deb: rpm
-	fakeroot alien build/RPMS/noarch/${NAME}-${VERSION}-1.noarch.rpm
-
 clean:
 	@rm -f *~ bin/*~ etc/*~ data/*~ ${NAME}-*.tar.gz
 	@rm -rf build dist MANIFEST
 
 .PHONY: dist srpm rpm sources clean 
-
-
-
-
