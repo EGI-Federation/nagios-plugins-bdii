@@ -2,6 +2,7 @@
 
 This nagios probe is used to monitor BDII.
 It provides check_bdii_entries support for Nagios.
+`nagios-common` dependency can be found in EPEL.
 
 BDII documentation is available with the main [BDII documentation](https://gridinfo-documentation.readthedocs.io/)
 
@@ -16,6 +17,7 @@ The required build dependencies are:
 - rpm-build
 - make
 - rsync
+- openldap-devel
 
 ```sh
 # Checkout tag to be packaged
