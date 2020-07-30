@@ -38,7 +38,7 @@ script:
 deploy:
   provider: releases
   # Set in the settings page of the repository, as an environment variable
-  github_token: $GITHUB_TOKEN
+  api_key: $GITHUB_TOKEN
   skip_cleanup: true
   file_glob: true
   file:
