@@ -37,8 +37,8 @@ script:
   - docker exec -i -w /tmp/build/RPMS/x86_64 build_container bash -c "yum localinstall -y nagios-plugins-bdii*.el${OS_MAJOR_VERSION}.x86_64.rpm"
 deploy:
   provider: releases
-  api_key:
-    secure: "FIxzffNKfK5wKJ1j+Bgr93kutFasTZEKqx+CKrz2SKioE8zhYizi44biujNq0Ul+l6rviG97NeYUHZ+IUj/Y9a/HrnTmxh9KeuY2VLJ8d/QiypDpuryk/cZ20QOrLARZT4C0dXVzcFe0Osmr/Ees3drKahX4pg4XzdleoFY9TKK05Ek2kj/nvHj6y6xz/MlHdNqKofRm31+Zq0lOhINVuEhCskt2ilCuR1UG2GrpqheqeWxehwkQ1arN4fgn/1FYWwsT09uLDfyPhhhqXefSQ9vfmxE2Mv53mXvHI4GRZwUTKfTShkbDBXBMnGWqAoPmdOjrZXznHjbtEzg1oggEDbyNhBfi5XqHta4UnrGZN5VRtnrTPoWvZd/yRQuSCVigVOBpkycJdWS0eAtoTVF7BrlHRQlyseb9znC9o9U7s875N25y2+UlBSrWbJHljZE/mtJGT9EsteXEZ45ofRbCxg7+awU53HiyS9FC0EcQvWPswA9KF9l7mLJRcz3IBpsz1prqy0H8BsvV1gQUWbK4nYOIQImFcObeszyy6JBsBrHoA5LCo9E4BC1AO8z+1ZE5LfwmiGK110iVXGfQIJwA4iWOrz6jzpTx4PNu6KwUEyVcUB410hb0nS8mKs1tyPyhe8CiYPXZTy/Y+tsH4u34EfAl0vlnpUKguVouxhQUTcs="
+   # Set in the settings page of the repository, as an environment variable
+  github_token: $GITHUB_TOKEN
   skip_cleanup: true
   file_glob: true
   file:
