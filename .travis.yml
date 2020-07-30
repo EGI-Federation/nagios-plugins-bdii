@@ -16,6 +16,7 @@ before_install:
   - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
   - sudo apt update
   - sudo apt install -y docker-ce
+  - sudo apt install -y cppcheck
   - docker --version
 install:
   - wget http://archive.ubuntu.com/ubuntu/pool/universe/r/rpmlint/rpmlint_1.7-1_all.deb
@@ -25,7 +26,8 @@ script:
   # First syntax, linting and pre-test stages
   - mdl -s relaxed README.md
   - rpmlint nagios-plugins-bdii.spec
-  # TODO lint C file
+  # Lint C file
+  cppcheck src/check_bdii_entries.c
   # Then, start the build container
   - docker run --name build_container -d -ti -v $PWD:/tmp -w /tmp $OS_NAME:$OS_MAJOR_VERSION /bin/bash -c 'while true ; do sleep 1000 ; done'
   # Now, install prerequisites for the build
