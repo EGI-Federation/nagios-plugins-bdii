@@ -37,7 +37,7 @@ script:
   - docker exec -i -w /tmp/build/RPMS/x86_64 build_container bash -c "yum localinstall -y nagios-plugins-bdii*.el${OS_MAJOR_VERSION}.x86_64.rpm"
 deploy:
   provider: releases
-   # Set in the settings page of the repository, as an environment variable
+  # Set in the settings page of the repository, as an environment variable
   github_token: $GITHUB_TOKEN
   skip_cleanup: true
   file_glob: true
