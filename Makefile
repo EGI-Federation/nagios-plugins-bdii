@@ -24,9 +24,8 @@ sources: dist
 	cp $(build)/$(NAME)-$(VERSION).tar.gz .
 
 dist:
-	mkdir -p  $(build)/$(NAME)-$(VERSION)/
-
-	rsync -HaS --exclude .svn --exclude 'build*' * $(build)/$(NAME)-$(VERSION)/
+	mkdir -p $(build)/$(NAME)-$(VERSION)/
+	rsync -aHS --exclude ".git" --exclude 'build*' * $(build)/$(NAME)-$(VERSION)/
 	cd $(build); tar --gzip -cf $(NAME)-$(VERSION).tar.gz $(NAME)-$(VERSION)/; cd -
 
 prepare: dist
