@@ -1,0 +1,46 @@
+---
+sudo: required
+services:
+  - docker
+language: python
+python:
+  - "2.7"
+env:
+  global:
+    - OS_NAME=centos
+  matrix:
+    - OS_MAJOR_VERSION=6
+    - OS_MAJOR_VERSION=7
+before_install:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt update
+  - sudo apt install -y docker-ce
+  - docker --version
+install:
+  - wget http://archive.ubuntu.com/ubuntu/pool/universe/r/rpmlint/rpmlint_1.7-1_all.deb
+  - sudo dpkg -i rpmlint_1.7-1_all.deb || sudo apt install -f -y
+  - gem install mdl
+script:
+  # First syntax, linting and pre-test stages
+  - mdl -s relaxed README.md
+  - rpmlint nagios-plugins-bdii.spec
+  # TODO lint C file
+  # Then, start the build container
+  - docker run --name build_container -d -ti -v $PWD:/tmp -w /tmp $OS_NAME:$OS_MAJOR_VERSION /bin/bash -c 'while true ; do sleep 1000 ; done'
+  # Now, install prerequisites for the build
+  - docker exec -i -w /root build_container yum install -y rpm-build make rsync gcc openldap-devel
+  # Eventually build the rpm
+  - docker exec -i -w /tmp build_container make rpm
+  # and install it
+  - docker exec -i -w /tmp/build/RPMS/noarch build_container bash -c "rpm -Uvh nagios-plugins-bdii*.el${OS_MAJOR_VERSION}.x86_64.rpm"
+deploy:
+  provider: releases
+  api_key:
+    secure: aa7woLamSN4Tmhg36Opm1E9FXm+aT+0smJpgjRefFzLcJ2Kc/9XjuyCvI1Sux3BgQNgQcw/ptf8Zc0+JKc3uxZETKxTELJGalK6qU6aNyZatwxEI6UFBRFb0NHMbWhfrVaapywaLoGw3DRo/FWB6LIJDuzWjQmCAUfiEFRBQhslRUcW1Z94VptHDR4+Er4KhbSm4o6Kq2QPN1Y7yFaE+Sn+ey4NpREdbHFxznXAI+E/7Vdxu9VtT/80iwGvZHeTXu6q6X7dECQ46qIhYZgTgBt9MhYF7mO5d+NjQ707ekAgKrlAWPigcX47DKwp5Rl7n4dtfFHjott+VKNKPEDqqtXAxKyBX7sKW0jDMpaQn9taWllos9Il1VwOh2lE1wifN77NsBpNyz5q6nzVmHRLHBeLpOmlYrUn0zsUla532wqXqMjOMeF/oieqQNaVct1T1Bo5zk6nZASti/wnILmgZ9C05wlp0ZZB5d9mBGMPUOgbBuNI3xz3bmsJezQlcAvoezJ6X+8lWFavkPFRy2l0mpj6eDshBfcFde1xNcselnbqReIZVAHtd48fbBO7Blx6hpOlowZYxAbwEkYn0jYTPXVByzIjKlz9gZkH927z7f+uySYawq9CllyU/q4DsNASkcY8DyiY71/TPkTBQBBjUo56xSSoVqzQhmViyDdohi/Y=
+  file_glob: true
+  file:
+    - build/RPMS/x86_64/nagios-plugins-bdii*.el${OS_MAJOR_VERSION}.x86_64.rpm
+    - build/SRPMS/nagios-plugins-bdii*.el${OS_MAJOR_VERSION}.src.rpm
+  on:
+    tags: true
