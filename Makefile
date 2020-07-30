@@ -6,7 +6,7 @@ DATE=$(shell date "+%a, %d %b %Y %T %z")
 dist=$(shell rpm --eval '%dist' | sed 's/%dist/.el5/')
 lib_dir=$(shell rpm --eval '%{_libdir}' )
 
-CC  = /usr/bin/gcc
+CC = /usr/bin/gcc
 LDFLAGS = -lldap -DLDAP_DEPRECATED
 SRC = src
 
@@ -18,30 +18,30 @@ install:
 	mkdir -p $(prefix)$(lib_dir)/nagios/plugins/
 	mkdir -p $(prefix)/usr/share/doc/$(NAME)
 	install -m 0755 ${build}/check_bdii_entries $(prefix)/$(lib_dir)/nagios/plugins/
-	install -m 0644 LICENSE $(prefix)/usr/share/doc/$(NAME)/
+	install -m 0644 LICENSE.txt $(prefix)/usr/share/doc/$(NAME)/
 
 sources: dist
 	cp $(build)/$(NAME)-$(VERSION).tar.gz .
 
 dist:
-	mkdir -p  $(build)/$(NAME)-$(VERSION)/
-
-	rsync -HaS --exclude .svn --exclude 'build*' * $(build)/$(NAME)-$(VERSION)/
+	mkdir -p $(build)/$(NAME)-$(VERSION)/
+	rsync -aHS --exclude ".git" --exclude 'build*' * $(build)/$(NAME)-$(VERSION)/
 	cd $(build); tar --gzip -cf $(NAME)-$(VERSION).tar.gz $(NAME)-$(VERSION)/; cd -
 
 prepare: dist
-	@mkdir -p  build/RPMS/noarch
-	@mkdir -p  build/SRPMS/
-	@mkdir -p  build/SPECS/
-	@mkdir -p  build/SOURCES/
-	@mkdir -p  build/BUILD/
+	@mkdir -p build/RPMS/noarch
+	@mkdir -p build/SRPMS/
+	@mkdir -p build/SPECS/
+	@mkdir -p build/SOURCES/
+	@mkdir -p build/BUILD/
 	cp $(build)/$(NAME)-$(VERSION).tar.gz $(build)/SOURCES
+	cp $(NAME).spec $(build)/SPECS
 
 srpm: prepare
-	rpmbuild -bs --define="dist ${dist}" --define='_topdir ${build}' $(NAME).spec
+	@rpmbuild -bs --define="dist ${dist}" --define='_topdir ${build}' $(build)/SPECS/$(NAME).spec
 
 rpm: srpm
-	rpmbuild --rebuild  --define='_topdir ${build} ' $(build)/SRPMS/$(NAME)-$(VERSION)-$(RELEASE)${dist}.src.rpm
+	rpmbuild --rebuild --define='_topdir ${build}' $(build)/SRPMS/$(NAME)-$(VERSION)-$(RELEASE)${dist}.src.rpm
 
 clean:
 	@rm -f *~ bin/*~ etc/*~ data/*~ ${NAME}-*.tar.gz
