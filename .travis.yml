@@ -31,7 +31,8 @@ script:
   # Then, start the build container
   - docker run --name build_container -d -ti -v $PWD:/tmp -w /tmp $OS_NAME:$OS_MAJOR_VERSION /bin/bash -c 'while true ; do sleep 1000 ; done'
   # Now, install prerequisites for the build
-  - docker exec -i -w /root build_container yum install -y rpm-build make rsync gcc openldap-devel
+  - docker exec -i -w /root build_container yum install -y rpm-build
+  - docker exec -i build_container yum-builddep -y nagios-plugins-bdii.spec
   # Eventually build the rpm
   - docker exec -i -w /tmp build_container make rpm
   # and install it

@@ -7,6 +7,9 @@ License: ASL 2.0
 Group: Applications/System
 BuildRoot: %{_tmppath}/%{name}-%{version}-build
 BuildRequires: openldap-devel%{?_isa}
+BuildRequires: make
+BuildRequires: rsync
+BuildRequires: gcc
 Requires: nagios-common
 URL: https://github.com/EGI-Foundation/nagios-plugins-bdii
 
